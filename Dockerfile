@@ -1,15 +1,20 @@
+# Using a specific version of the Node.js image for consistency and reliability
 FROM node:18.15-alpine
 
-# Install needed apps and set workdir
+# Installing required applications: curl for network operations, Nginx as a web server, and Supervisor for process control
 RUN apk add --no-cache curl nginx supervisor
+
+# Setting the working directory inside the container
 WORKDIR /app
 
-# Copy project files and config files
+# Copying the entire project and necessary configuration files into the container
 COPY . .
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/supervisord-programs.conf /etc/supervisor/conf.d/supervisord-programs.conf
 COPY ./docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Run command
+# Exposing port 80 for Nginx
 EXPOSE 80
+
+# Starting Supervisor to manage the Node.js and Nginx processes
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
